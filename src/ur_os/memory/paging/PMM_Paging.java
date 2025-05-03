@@ -49,6 +49,12 @@ public class PMM_Paging extends ProcessMemoryManager{
         }
     }
 
+    public int calcUnusedBytes(){
+        int allocated = pt.getSize() * OS.PAGE_SIZE;
+        int used = this.getSize();
+        return allocated - used;
+    }
+
     public int getAssignedPages() {
         return assignedPages;
     }

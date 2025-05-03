@@ -52,17 +52,13 @@ public class OS {
     FreeMemoryManager fvmm;
     Random r;
     boolean lazySwap;
-    
     public static final int MAX_PROCESS_PRIORITY = 10; //Page size in bytes
     public static final int PAGE_SIZE = 64; //Page size in bytes
-    public static final MemoryManagerType SMM = MemoryManagerType.CONTIGUOUS;
+    public static final MemoryManagerType SMM = MemoryManagerType.PAGING;
     public static final FreeMemorySlotManagerType MSM = FreeMemorySlotManagerType.FIRST_FIT;
-    
     public static final ProcessVirtualMemoryManagerType PVMM = ProcessVirtualMemoryManagerType.FIFO;
     public static final int FRAMES_PER_PROCESS = 3; //Maximum number of frames assigned to a process, if virtual memory is on
     public static final boolean VIRTUAL_MEMORY_MODE_ON = false; //Maximum number of frames assigned to a process, if virtual memory is on
-    
-    
     public OS(SystemOS system, CPU cpu, IOQueue ioq){
         rq = new ReadyQueue(this);
         this.ioq = ioq;
@@ -136,6 +132,9 @@ public class OS {
             
             case CPU_TO_MEMORY:
                 cpu.addProcessToMemoryUnit(p);
+                if (SMM != MemoryManagerType.PAGING) {
+                    System.out.println("External fragmentation after adding process "+ p.getPid() + " to memory: " + system.calcExternalFragmentation());
+                }
                 break;
         
             case CPU_TO_IO:
@@ -147,6 +146,9 @@ public class OS {
                 p.setTime_finished(system.getTime());
                 System.out.println("Process Terminated: "+p.getPid()+" "+p.getSize());
                 fmm.reclaimMemory(p);
+                if (SMM != MemoryManagerType.PAGING) {
+                    System.out.println("External fragmentation: " + system.calcExternalFragmentation());
+                }                
                 system.showFreeMemory();
                 break;
             

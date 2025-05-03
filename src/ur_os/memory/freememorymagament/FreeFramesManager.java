@@ -34,7 +34,8 @@ public class FreeFramesManager extends FreeMemoryManager{
     }
     
     public int getFrame(){
-        return freeFrames.pop();
+
+	    return freeFrames.pop();
     }
     
     public void addFrame(int f){
